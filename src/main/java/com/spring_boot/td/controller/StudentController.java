@@ -1,6 +1,7 @@
 package com.spring_boot.td.controller;
 
 import com.spring_boot.td.entity.Student;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -28,9 +29,12 @@ public class StudentController {
     }
 
     @PostMapping("/students")
-    public List<Student> createStudent (@RequestBody List<Student> students) {
-        studentList.addAll(students);
-
-        return studentList;
+    public ResponseEntity<List<Student>> createStudent (@RequestBody List<Student> students) {
+        try {
+            studentList.addAll(students);
+            return ResponseEntity.status(201).body(studentList);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
     }
 }
