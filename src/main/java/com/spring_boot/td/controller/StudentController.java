@@ -1,5 +1,6 @@
 package com.spring_boot.td.controller;
 
+import com.spring_boot.td.entity.Student;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -9,7 +10,7 @@ import java.util.List;
 public class StudentController {
 
     @PostMapping("/students")
-    public List<Students> createStudent () {
+    public List<Student> createStudent () {
 
     }
 }
