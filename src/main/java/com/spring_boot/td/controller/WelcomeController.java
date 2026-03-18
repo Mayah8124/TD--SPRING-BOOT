@@ -11,11 +11,11 @@ public class WelcomeController {
 
     @GetMapping("/welcome")
     public ResponseEntity<String> welcome(@RequestParam String name){
-        if ("".equals(name)){
-            return ResponseEntity.status(400).build();
-        } else  {
-            return ResponseEntity.status(200).body("Welcome " + name);
+        if (name == null || name.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("Le paramètre 'name' est requis");
         }
+
+        return ResponseEntity.ok("Welcome " + name);
     }
 
 }
