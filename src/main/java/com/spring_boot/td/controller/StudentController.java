@@ -14,18 +14,29 @@ public class StudentController {
     private final List<Student> studentList = new ArrayList<>();
 
     @GetMapping("/students")
-    public String getStudentsName(@RequestHeader (value = "Accept", defaultValue = "text/plain") String Accept) {
-        if (!"text/plain".equalsIgnoreCase(Accept)) {
-            return "Format non supporté";
-        }
+    public ResponseEntity<String> getStudentsName(@RequestHeader (value = "Accept", defaultValue = "text/plain") String Accept) {
+        try {
+            if (Accept == null || Accept.trim().isEmpty()) {
+                return ResponseEntity.status(400).body("Header 'Accept' require");
+            }
 
-        if (studentList.isEmpty()) {
-            return "Student list is empty";
-        }
+            if ("application/json".equalsIgnoreCase(Accept)) {
+                return ResponseEntity.status(200).body(studentList.toString());
+            }
 
-        return studentList.stream()
-                .map(Student::getFirstName)
-                .collect(Collectors.joining(", "));
+            if ("text/plain".equalsIgnoreCase(Accept)) {
+                String result = studentList.stream()
+                        .map(Student::getFirstName)
+                        .toList()
+                        .toString();
+
+                return ResponseEntity.status(200).body(result);
+            }
+
+            return ResponseEntity.status(501).body("Format not supported");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Internal Server Error");
+        }
     }
 
     @PostMapping("/students")
