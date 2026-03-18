@@ -29,11 +29,7 @@ public class StudentController {
 
     @PostMapping("/students")
     public List<Student> createStudent (@RequestBody List<Student> students) {
-        List<Student> studentList = new ArrayList<>();
-
-        for (Student student : students) {
-            studentList.add(student);
-        }
+        studentList.addAll(students);
 
         return studentList;
     }
