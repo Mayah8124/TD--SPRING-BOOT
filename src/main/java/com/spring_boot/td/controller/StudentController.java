@@ -22,8 +22,6 @@ public class StudentController {
         this.studentValidator = studentValidator;
     }
 
-    private final List<Student> studentList = new ArrayList<>();
-
     @GetMapping("/students")
     public ResponseEntity<String> getStudentsName(@RequestHeader (value = "Accept", defaultValue = "text/plain") String accept) {
         try {
