@@ -1,6 +1,10 @@
 package com.spring_boot.td.controller;
 
 import com.spring_boot.td.entity.Student;
+import com.spring_boot.td.service.StudentService;
+import com.spring_boot.td.validator.StudentValidator;
+import org.apache.coyote.BadRequestException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,6 +14,11 @@ import java.util.stream.Collectors;
 
 @RestController
 public class StudentController {
+    private final StudentService studentService;
+
+    public StudentController(StudentService studentService) {
+        this.studentService = studentService;
+    }
 
     private final List<Student> studentList = new ArrayList<>();
 
@@ -40,12 +49,20 @@ public class StudentController {
     }
 
     @PostMapping("/students")
-    public ResponseEntity<List<Student>> createStudent (@RequestBody List<Student> students) {
+    public ResponseEntity<?> createStudent (@RequestBody List<Student> students) {
         try {
-            studentList.addAll(students);
-            return ResponseEntity.status(201).body(studentList);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
+            List<Student> result = studentService.createStudentList(students);
+
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(result);
+
+        } catch (BadRequestException e) {
+
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .header("Content-Type", "text/plain")
+                    .body(e.getMessage());
         }
     }
 }
