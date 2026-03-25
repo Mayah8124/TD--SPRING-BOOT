@@ -15,36 +15,23 @@ import java.util.stream.Collectors;
 @RestController
 public class StudentController {
     private final StudentService studentService;
+    private final StudentValidator studentValidator;
 
-    public StudentController(StudentService studentService) {
+    public StudentController(StudentService studentService, StudentValidator studentValidator) {
         this.studentService = studentService;
+        this.studentValidator = studentValidator;
     }
 
     private final List<Student> studentList = new ArrayList<>();
 
     @GetMapping("/students")
-    public ResponseEntity<String> getStudentsName(@RequestHeader (value = "Accept", defaultValue = "text/plain") String Accept) {
+    public ResponseEntity<String> getStudentsName(@RequestHeader (value = "Accept", defaultValue = "text/plain") String accept) {
         try {
-            if (Accept == null || Accept.trim().isEmpty()) {
-                return ResponseEntity.status(400).body("Header 'Accept' require");
-            }
-
-            if ("application/json".equalsIgnoreCase(Accept)) {
-                return ResponseEntity.status(200).body(studentList.toString());
-            }
-
-            if ("text/plain".equalsIgnoreCase(Accept)) {
-                String result = studentList.stream()
-                        .map(Student::getFirstName)
-                        .toList()
-                        .toString();
-
-                return ResponseEntity.status(200).body(result);
-            }
-
-            return ResponseEntity.status(501).body("Format not supported");
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body("Internal Server Error");
+            studentValidator.validateAcceptHeader(accept);
+            String result = studentService.getStudent(accept);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (BadRequestException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
